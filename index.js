@@ -21,10 +21,14 @@ let maximumPrice
 let arrayOfPrices
 setInterval(() => {
     axios.get("https://api.kraken.com/0/public/OHLC?pair=XBTGBP").then(data => {
+        console.log("FETCHING")
+        amountOfMoney = 1000
+        amountOfBitcoin = 0
         arrayOfPrices = merge(data.data.result.XXBTZGBP)
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         generateLine()
         drawMovingAverage()
+        console.log(amountOfMoney)
     })
 }, 5000);
 
@@ -78,8 +82,8 @@ function generateLine() {
 let largestProfit = 0
 let bestPoints = 0
 let below = true
-let amountOfMoney = 1000
-let amountOfBitcoin = 0
+let amountOfMoney
+let amountOfBitcoin
 function drawMovingAverage() {
 
     let previous = null
