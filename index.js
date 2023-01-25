@@ -5,11 +5,12 @@ const width = canvas.clientWidth
 const height = canvas.clientHeight
 
 const numOfPreviousPoints = 10;
+const numOfPreviousPoints2 = 50;
 
 const timeDifference = info[info.length - 1][0] - info[0][0]
 
 const startTime = info[0][0]
-const xScale = width/timeDifference
+const xScale = width / timeDifference
 
 let minimumPrice = info[0][1]
 let maximumPrice = info[0][1]
@@ -20,7 +21,7 @@ info.forEach(item => {
 })
 
 const priceDifference = maximumPrice - minimumPrice
-const yScale = height/priceDifference
+const yScale = height / priceDifference
 
 function convertTimeToX(time) {
     return (time - startTime) * xScale
@@ -43,27 +44,48 @@ function drawLine(x, y, x2, y2) {
     ctx.stroke();
 }
 
-ctx.fillStyle = "#000000";
+function generateLine() {
+    ctx.fillStyle = "#000000";
 
-for (let i = 0; i < info.length - 1; i++) {
-    let item = info[i]
-    let nextItem = info[i + 1]
-    // drawPoint(convertTimeToX(item[0]), convertPriceToY(parseFloat(item[1])))
-    drawLine(convertTimeToX(item[0]), convertPriceToY(parseFloat(item[1])), 
-    convertTimeToX(nextItem[0]), convertPriceToY(parseFloat(nextItem[1])))
-}
-
-let previous = null
-
-ctx.strokeStyle = "#FF0000";
-
-for (let i = numOfPreviousPoints; i < info.length; i++) {
-    let item = info[i]
-    let sum = 0
-    for (let j = i - numOfPreviousPoints; j < i; j++) {
-        sum += parseFloat(info[j][1])
+    for (let i = 0; i < info.length - 1; i++) {
+        let item = info[i]
+        let nextItem = info[i + 1]
+        // drawPoint(convertTimeToX(item[0]), convertPriceToY(parseFloat(item[1])))
+        drawLine(convertTimeToX(item[0]), convertPriceToY(parseFloat(item[1])),
+            convertTimeToX(nextItem[0]), convertPriceToY(parseFloat(nextItem[1])))
     }
-    let average = sum / numOfPreviousPoints
-    if (previous) drawLine(previous.x, previous.y, convertTimeToX(item[0]), convertPriceToY(average))
-    previous = {x: convertTimeToX(item[0]), y: convertPriceToY(average),}
 }
+
+function drawMovingAverage() {
+    let previous = null
+    ctx.strokeStyle = "#FF0000";
+
+    for (let i = numOfPreviousPoints; i < info.length; i++) {
+        let item = info[i]
+        let sum = 0
+        for (let j = i - numOfPreviousPoints; j < i; j++) {
+            sum += parseFloat(info[j][1])
+        }
+        let average = sum / numOfPreviousPoints
+        if (previous) drawLine(previous.x, previous.y, convertTimeToX(item[0]), convertPriceToY(average))
+        previous = { x: convertTimeToX(item[0]), y: convertPriceToY(average), }
+    }
+}
+
+generateLine()
+drawMovingAverage()
+
+previous = null
+
+ctx.strokeStyle = "#FF00FF";
+
+// for (let i = numOfPreviousPoints2; i < info.length; i++) {
+//     let item = info[i]
+//     let sum = 0
+//     for (let j = i - numOfPreviousPoints2; j < i; j++) {
+//         sum += parseFloat(info[j][1])
+//     }
+//     let average = sum / numOfPreviousPoints2
+//     if (previous) drawLine(previous.x, previous.y, convertTimeToX(item[0]), convertPriceToY(average))
+//     previous = {x: convertTimeToX(item[0]), y: convertPriceToY(average),}
+// }
